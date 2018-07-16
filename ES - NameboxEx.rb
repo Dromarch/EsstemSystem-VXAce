@@ -141,3 +141,20 @@ class Window_Message < Window_Base
   end
   
 end # Window_Message
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# ➛ Window_ChoiceList
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+class Window_ChoiceList < Window_Command
+  
+  alias e_nbex_wcl_up update_placement
+  def update_placement
+    e_nbex_wcl_up
+    if $game_system.enbex_data[:pos] == 2
+        self.y = [@message_window.y + @message_window.height + fitting_height(1),
+                  @message_window.y + @message_window.height,
+                  @message_window.y - height - fitting_height(1)][$game_message.position]
+    end
+  end
+  
+end # Window_ChoiceList

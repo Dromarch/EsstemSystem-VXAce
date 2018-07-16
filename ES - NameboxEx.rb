@@ -1,7 +1,7 @@
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # ✦ Esteem System - NameboxEx
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# ➛ Esse script adiciona uma caixa de nome durante as mensagens.
+# ➛ Esse script exibe uma caixa de nome durante as mensagens.
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Autor: Dromarch (Skyloftian)
 # Site: dromarch.github.io | Acess: https://github.com/Dromarch/EsteemSystem-VXAce

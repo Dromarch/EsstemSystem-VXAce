@@ -14,7 +14,7 @@
 #   ▪ enbex_name("name")   - Define o nome exibido na Namebox,
 #   ▪ embex_pos(pos)       - Define a posição do eixo X da Namebox.
 # "name" é o nome que será exibido na Namebox. (Deve estar dento de aspas.)
-# pos é a posição do eixo X (horizontal) da Namebox. Sendo 0 = Esuqerda
+# pos é a posição do eixo X (horizontal) da Namebox. Sendo 0 = Esquerda
 # 1 = Centro e 2 = Direita. Valores diferentes destes serão ignorados.
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # ➛ Não existem configurações a serem feitas.

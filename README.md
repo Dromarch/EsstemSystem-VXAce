@@ -2,7 +2,7 @@
 A some collection of scripts for RPG Maker VX Ace.
 
 ## Terms of Use:
-The all scripts is free to use. Just credit Gabriel Nascimento if you usse.
+The all scripts is free to use. Just credit Gabriel Nascimento if you use.
 
 ## Script List:
 > Menu Scripts:

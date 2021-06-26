@@ -7,6 +7,7 @@ module IRIS_BATTLESTATUSHUD_SETTINGS
   FACE_Y_OFFSET = 0  # Coordenada Y da face
   FACE_WIDTH    = 60 # Largura da face
   FACE_HEIGHT   = 96 # Altura da face
+  FACE_X_WIDTH  = 32 # Coordenada X do recorte da face
   
   NAME_X_OFFSET = 28 # Coordenada X do nome
   NAME_Y_OFFSET = 2  # Coordenada Y do nome
@@ -35,9 +36,66 @@ class Game_Actor < Game_Battler
     @status_index = 0
   end
   
+  def update_status_index
+    icons = (state_icons + buff_icons)
+    @status_index += 1
+    @status_index = 0 if @status_index > icons.length - 1
+  end
+  
+end
+class Sprite_StatusIcon < Sprite
+  
+  def initialize(viewport = nil, actor)
+    super(viewport)
+    @actor = actor
+    @icon_index = 0
+    @iconset = Cache.system("Iconset")
+    create_bitmap
+  end
+  
+  def create_bitmap
+    self.bitmap = Bitmap.new(24, 24)
+    refresh_bitmap_rect
+  end
+  
+  def update
+    super
+    refresh
+  end
+  
+  def dispose
+    super
+    self.bitmap.dispose
+  end
+  
+  def refresh
+    icons = (@actor.state_icons + @actor.buff_icons)
+    @icon_index = icons[@actor.status_index] ? icons[@actor.status_index]: 0
+    refresh_bitmap_rect
+  end
+  
+  def refresh_bitmap_rect
+    rect = Rect.new(@icon_index % 16 * 24, @icon_index / 16 * 24, 24, 24)
+    self.bitmap.clear
+    self.bitmap.blt(0, 0, @iconset, rect)
+  end
+
+  
 end
 class Window_BattleStatus < Window_Selectable
   include IRIS_BATTLESTATUSHUD_SETTINGS
+  
+  alias iris_wbs_initialize initialize
+  def initialize
+    @icon_sprites = []
+    iris_wbs_initialize
+  end
+  
+  def show
+    super
+    refresh
+    self
+  end
   
   def col_max
     return 3
@@ -56,27 +114,33 @@ class Window_BattleStatus < Window_Selectable
     rect
   end
   
+  alias iris_wbs_draw_item draw_item
+  def draw_item(index)
+    iris_wbs_draw_item(index)
+    actor = $game_party.battle_members[index]
+    rect = basic_area_rect(index)
+    draw_actor_icons(actor, index, rect.x + STATUS_X_OFFSET, rect.y + STATUS_Y_OFFSET, rect.width)
+  end
+  
   def draw_basic_area(rect, actor)
     draw_actor_face(actor, rect.x + 1 + FACE_X_OFFSET, rect.y + 1 + FACE_Y_OFFSET, true)
     draw_actor_name(actor, rect.x + NAME_X_OFFSET, rect.y + NAME_Y_OFFSET, 100)
-    draw_actor_icons(actor, rect.x + STATUS_X_OFFSET, rect.y + STATUS_Y_OFFSET, rect.width)
   end
   
   def draw_face(face_name, face_index, x, y, enabled = true)
     bitmap = Cache.face(face_name)
     width = FACE_WIDTH
     height = FACE_HEIGHT
-    rect = Rect.new((face_index % 4 * 96) + (width / 2), face_index / 4 * 96, width, height - 2)
+    rect = Rect.new((face_index % 4 * 96) + FACE_X_WIDTH, face_index / 4 * 96, width, height - 2)
     contents.blt(x, y, bitmap, rect, enabled ? 255 : translucent_alpha)
     bitmap.dispose
   end
   
-  def draw_actor_icons(actor, x, y, width = 96)
-    icons = (actor.state_icons + actor.buff_icons)
-    return unless icons.length > 0
-    actor.status_index = 0 if actor.status_index > icons.length - 1
-    id = actor.status_index
-    draw_icon(icons[id], x, y)
+  def draw_actor_icons(actor, index, x, y, width = 96)
+    @icon_sprites[index] = Sprite_StatusIcon.new(self.viewport, actor)
+    x += self.x + standard_padding; y += self.y + standard_padding
+    @icon_sprites[index].x, @icon_sprites[index].y = x, y
+    @icon_sprites[index].z = self.z + 1
   end
   
   def gauge_area_rect(index)
@@ -97,6 +161,21 @@ class Window_BattleStatus < Window_Selectable
     draw_actor_tp(actor, rect.x, rect.y, width)
   end
   
+  def update
+    super
+    @icon_sprites.each do |sprite|
+      sprite.update
+      sprite.visible = self.visible
+    end
+  end
+  
+  def terminate
+    @icon_sprites.each do |sprite|
+      sprite.bitmap.dispose
+      sprite.dispose
+    end
+  end
+  
 end
 class Scene_Battle < Scene_Base
   
@@ -108,16 +187,25 @@ class Scene_Battle < Scene_Base
   
   alias iris_sb_update update
   def update
+    update_timer
     iris_sb_update
+  end
+  
+  def update_timer
     @timer += 1
-    if @timer > STATUS_TIMER
+    if @timer > IRIS_BATTLESTATUSHUD_SETTINGS::STATUS_TIMER
       $game_party.battle_members.each do |actor|
-        actor.status_index += 1
+        actor.update_status_index
       end
-      @status_window.refresh
-      @actor_window.refresh
       @timer = 0
     end
   end
+  
+  alias iris_sb_terminate terminate
+  def terminate
+    @status_window.terminate
+    @actor_window.terminate
+    iris_sb_terminate
+  end  
   
 end
